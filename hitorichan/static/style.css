@@ -12,13 +12,13 @@ h1 {
   text-align: center;
 }
 
-.post {
+.reply {
   display: flex;
   margin: 2px;
   font-size: 0.8em;
 }
 
-.post .body {
+.reply .body {
   background-color: #505050;
   width: fit-content;
   padding-left: 8px;
@@ -28,7 +28,27 @@ h1 {
   margin-left: 4px;
 }
 
-.post .text {
+.center {
+  width: 100%;
+  text-align: center;
+}
+
+.reply .text {
   margin: 10px;
   margin-left: 24px;
+}
+
+.new_reply {
+  display: inline-block;
+  width: 40%;
+  text-align: center;
+}
+
+.new_reply .input {
+  width: 100%;
+  margin-bottom: 9px;
+}
+
+.new_reply input[type=submit] {
+  float: right;
 }

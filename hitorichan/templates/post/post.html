@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% set title = Hitori%}
+
+{% block content %}
+  {% for reply in replies %}
+    <div class="reply">
+      >>
+      <div class="body">
+        <div class="time">
+          <span><b>{{ reply["name"] }}</b></span>
+          <span>{{ reply["time"].strftime("%d/%m/%y (%a) %H:%M:%S") }} No.{{ reply["id"] }}</span>
+        </div>
+        <div class="text">
+          {{ reply["text"] }}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+  <hr>
+  <div class="center">
+  <div class="new_reply">
+    <h3>[Post a Reply]</h3>
+    <form method="post">
+      <input class="input" type="text" placeholder="Name (Anonymous)" name="name">
+      <br>
+      <textarea class="input" placeholder="Comment" name="text"></textarea>
+      <br>
+      <input type="submit" value="Submit">
+    </form>
+  </div>
+  </div>
+{%endblock %}

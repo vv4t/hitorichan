@@ -19,8 +19,8 @@ def create_app(test_config=None):
   except OSError:
     pass
   
-  from . import thread
-  app.register_blueprint(thread.bp)
-  app.add_url_rule("/", endpoint="index")
+  from . import post
+  app.register_blueprint(post.bp)
+  app.add_url_rule("/", endpoint="post")
   
   return app
