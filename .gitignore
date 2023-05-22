@@ -1,0 +1,5 @@
+build
+hitorichan.egg-info
+instance
+venv
+hitorichan/__pycache__

@@ -1,0 +1,34 @@
+html {
+  background-color: #303030;
+  color: white;
+  font-family: "Arial", monospace;
+}
+
+hr {
+  border-color: #707070;
+}
+
+h1 {
+  text-align: center;
+}
+
+.post {
+  display: flex;
+  margin: 2px;
+  font-size: 0.8em;
+}
+
+.post .body {
+  background-color: #505050;
+  width: fit-content;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  margin-left: 4px;
+}
+
+.post .text {
+  margin: 10px;
+  margin-left: 24px;
+}
