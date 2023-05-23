@@ -13,6 +13,16 @@ h1 {
   text-align: center;
 }
 
+.reply_id {
+  color: #ffffff !important;
+  text-decoration: none !important;
+  outline: none !important;
+}
+
+.reply_id:hover {
+  color: #22aaaa !important;
+}
+
 a:link {
   color: #00ffff;
 }

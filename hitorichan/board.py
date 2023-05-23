@@ -86,11 +86,14 @@ def thread(reply_id):
     (thread_id,)
   ).fetchone()
   
-  replies=db.execute(
+  replies = db.execute(
     "SELECT id, created, name, text FROM replies"
     " WHERE thread_id=?"
     " ORDER BY id ASC",
     (thread_id,)
   ).fetchall()
+  
+  if replies[0]["id"] != reply_id:
+    return redirect(url_for("board.thread", reply_id=replies[0]["id"], _anchor="p" + str(reply_id)))
   
   return render_template("thread.html", thread=current_thread, replies=replies)
