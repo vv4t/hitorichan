@@ -1,7 +1,7 @@
 blinker
 click
 Flask
-gunicor
+gunicorn
 hitorichan @ file:///home/sanakan/g/hitorichan
 itsdangerous
 Jinja2
