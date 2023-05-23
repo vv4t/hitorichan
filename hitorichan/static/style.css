@@ -34,7 +34,12 @@ a:visited {
 td {
   background-color: #252525;
   text-align: left;
-  padding-left: 3px;
+}
+
+th {
+  background-color: #252525;
+  text-align: left;
+  padding: 8px;
 }
 
 table {
@@ -42,10 +47,13 @@ table {
 }
 
 td input, td textarea {
+  margin: 0;
+  padding: 8px;
+  border: 0;
   color: #909090;
   width: 100%;
   height: 100%;
-  background-color: #252525;
+  background-color: #ffffff;
 }
 
 .center {
