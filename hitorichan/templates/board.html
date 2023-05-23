@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% from "reply.html" import show_reply %}
 
 {% block content %}
   <div class="center">
@@ -34,20 +35,10 @@
         (thread["id"],)
       ).fetchall()
     %}
-    <div class="thread">
-      <div class="body">
-        <div class="time">
-          <b><span style="color: #ff00ff;">{{ thread["subject"] }}</span> {{ replies[0]["name"] }}</b>
-          {{ replies[0]["created"].strftime("%d/%m/%y (%a) %H:%M:%S") }} No.{{ replies[0]["id"] }}
-        </div>
-        <div class="text">
-          {{ replies[0]["text"] }}
-        </div>
-      </div>
-    </div>
+    {{ show_reply(replies[0], "thread", thread["subject"]) }}
     {% if replies|length > 4 %}
       {{
-        (replies|length - 3) }} repl{{ "ies" if replies|length > 4 else "y"
+        (replies|length - 4) }} repl{{ "ies" if replies|length > 4 else "y"
       }} omitted. <a href="thread/{{ replies[0]['id'] }}">Click here</a> to view.
       {%
         set replies=db.execute(
@@ -63,11 +54,11 @@
         ).fetchall()
       %}
       {% for reply in replies %}
-        {% include "reply.html" %}
+        {{ show_reply(reply) }}
       {% endfor %}
     {% else %}
       {% for reply in replies[1:4] %}
-        {% include "reply.html" %}
+        {{ show_reply(reply) }}
       {% endfor %}
     {% endif %}
     <hr>

@@ -5,15 +5,20 @@
   {% endfor %}
 {% endmacro %}
 
-<div class="reply">
-  >>
-  <div class="body">
-    <div>
-      <span><b>{{ reply["name"] }}</b></span>
-      <span>{{ reply["created"].strftime("%d/%m/%y (%a) %H:%M:%S") }} No.{{ reply["id"] }}</span>
-    </div>
-    <div class="text">
-      {{ format(reply["text"]) }}
+{% macro show_reply(reply, type="reply", subject="") %}
+  <div class="{{ type }}">
+    {% if type == "reply" %}
+      >>
+    {% endif %}
+    <div class="body">
+      <div>
+        <span style="color: #ff00ff;"><b>{{ subject }}</b></span>
+        <b>{{ reply["name"] }}</b>
+        {{ reply["created"].strftime("%d/%m/%y (%a) %H:%M:%S") }} No.{{ reply["id"] }}
+      </div>
+      <div class="text">
+        {{ format(reply["text"]) }}
+      </div>
     </div>
   </div>
-</div>
+{% endmacro %}

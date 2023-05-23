@@ -1,21 +1,12 @@
 {% extends "base.html" %}
+{% from "reply.html" import show_reply %}
 
 {% block content %}
   [<a href="/">Return</a>]
   <hr>
-  <div class="thread">
-    <div class="body">
-      <div class="time">
-        <b><span style="color: #ff00ff;">{{ thread["subject"] }}</span> {{ replies[0]["name"] }}</b>
-        {{ replies[0]["created"].strftime("%d/%m/%y (%a) %H:%M:%S") }} No.{{ replies[0]["id"] }}
-      </div>
-      <div class="text">
-        {{ replies[0]["text"] }}
-      </div>
-    </div>
-  </div>
+  {{ show_reply(replies[0], "thread", thread["subject"]) }}
   {% for reply in replies[1:] %}
-    {% include "reply.html" %}
+    {{ show_reply(reply) }}
   {% endfor %}
   <hr>
   <div class="center">
