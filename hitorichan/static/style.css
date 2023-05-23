@@ -12,7 +12,12 @@ h1 {
   text-align: center;
 }
 
-.reply {
+.center {
+  width: 100%;
+  text-align: center;
+}
+
+.post, .reply {
   display: flex;
   margin: 2px;
   font-size: 0.8em;
@@ -28,19 +33,14 @@ h1 {
   margin-left: 4px;
 }
 
-.center {
-  width: 100%;
-  text-align: center;
-}
-
-.reply .text {
+.text {
   margin: 10px;
   margin-left: 24px;
 }
 
 .new_reply {
   display: inline-block;
-  width: 40%;
+  width: 25%;
   text-align: center;
 }
 
