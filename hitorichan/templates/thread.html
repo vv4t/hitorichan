@@ -1,6 +1,14 @@
 {% extends "base.html" %}
 {% from "reply.html" import show_reply %}
 
+{% block title %}
+  {% if thread["subject"] == "" %}
+    {{ replies[0]["text"][:32] }}
+  {% else %}
+    {{ thread["subject"][:32] }}
+  {% endif %}
+{% endblock %}
+
 {% block content %}
   [<a href="/">Return</a>]
   <hr>

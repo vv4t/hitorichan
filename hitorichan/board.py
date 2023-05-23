@@ -46,7 +46,15 @@ def board():
     return redirect(url_for("board.board"))
   
   threads = db.execute(
-    "SELECT id, subject FROM threads"
+    "SELECT thread.id, thread.subject"
+    " FROM threads thread"
+    " ORDER BY ("
+    "  SELECT reply.created"
+    "  FROM replies reply"
+    "  WHERE reply.thread_id=thread.id"
+    "  ORDER BY reply.created DESC"
+    "  LIMIT 1"
+    " ) DESC"
   ).fetchall()
   
   return render_template("board.html", threads=threads, db=db)
