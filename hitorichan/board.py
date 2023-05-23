@@ -5,7 +5,10 @@ from flask import (
 from hitorichan.db import get_db
 from datetime import datetime
 
-bp = Blueprint("board", __name__)
+MAX_REPLIES = 500
+MAX_THREADS = 50
+
+bp = Blueprint("board", __name__, url_prefix="/1/")
 
 @bp.route("/", methods=["GET", "POST"])
 def board():
@@ -35,15 +38,48 @@ def board():
       
       thread_id = cursor.lastrowid
       
-      db.execute(
+      cursor.execute(
         "INSERT INTO replies (name, text, thread_id)"
         " VALUES (?, ?, ?)",
         (name, text, thread_id)
       )
       
+      reply_id = cursor.lastrowid
+      
       db.commit()
+      
+      thread_count = db.execute("SELECT Count(id) FROM threads").fetchone()[0]
+      if thread_count > MAX_THREADS:
+        prune_thread = db.execute(
+          "SELECT thread.id"
+          " FROM threads thread"
+          " ORDER BY ("
+          "  SELECT reply.created"
+          "  FROM replies reply"
+          "  WHERE reply.thread_id=thread.id"
+          "  ORDER BY reply.created DESC"
+          "  LIMIT 1"
+          " ) ASC"
+          " LIMIT 1"
+        ).fetchone()
+        
+        thread_id = prune_thread["id"]
+        
+        db.execute(
+          "DELETE FROM replies"
+          " WHERE thread_id=?",
+          (thread_id,)
+        )
+        
+        db.execute(
+          "DELETE FROM threads"
+          " WHERE id=?",
+          (thread_id,)
+        )
+        
+        db.commit()
     
-    return redirect(url_for("board.board"))
+    return redirect(url_for("board.thread", reply_id=reply_id))
   
   threads = db.execute(
     "SELECT thread.id, thread.subject"
@@ -69,6 +105,7 @@ def thread(reply_id):
     abort(404)
   
   thread_id = int(reply["thread_id"])
+  reply_count = db.execute("SELECT Count(id) FROM replies WHERE thread_id=?", (thread_id,)).fetchone()[0]
   
   if request.method == "POST":
     name = request.form["name"]
@@ -84,14 +121,34 @@ def thread(reply_id):
     if error is not None:
       flash(error)
     else:
-      db.execute(
+      cursor = db.cursor()
+      cursor.execute(
         "INSERT INTO replies (name, text, thread_id)"
         " VALUES (?, ?, ?)",
         (name, text, thread_id)
       )
+      
+      new_reply_id = cursor.lastrowid
+      
       db.commit()
-    
-    return redirect(url_for("board.thread", reply_id=reply_id))
+      if reply_count >= MAX_REPLIES:
+        db.execute(
+          "DELETE FROM replies"
+          " WHERE thread_id=?",
+          (thread_id,)
+        )
+        
+        db.execute(
+          "DELETE FROM threads"
+          " WHERE id=?",
+          (thread_id,)
+        )
+        
+        db.commit()
+        
+        return redirect(url_for("board", reply_id=reply_id))
+      
+      return redirect(url_for("board.thread", reply_id=reply_id, _anchor="p" + str(new_reply_id)))
   
   current_thread = db.execute(
     "SELECT * FROM threads WHERE id=?",
@@ -108,4 +165,4 @@ def thread(reply_id):
   if replies[0]["id"] != reply_id:
     return redirect(url_for("board.thread", reply_id=replies[0]["id"], _anchor="p" + str(reply_id)))
   
-  return render_template("thread.html", thread=current_thread, replies=replies)
+  return render_template("thread.html", thread=current_thread, replies=replies, reply_count=reply_count, MAX_REPLIES=MAX_REPLIES)

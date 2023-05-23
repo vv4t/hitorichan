@@ -32,34 +32,20 @@
       set replies=db.execute(
         "SELECT * FROM replies"
         " WHERE thread_id=?"
-        " ORDER BY id ASC"
-        " LIMIT 6",
+        " ORDER BY id ASC",
         (thread["id"],)
       ).fetchall()
     %}
     {{ show_reply(replies[0], "thread", thread["subject"]) }}
     {% if replies|length > 4 %}
       {{ (replies|length - 4) }}
-      repl{{ "ies" if replies|length == 6 else "y" }} omitted.
-      <a href="thread/{{ replies[0]['id'] }}">Click here</a> to view.
-      {%
-        set replies=db.execute(
-          "SELECT * FROM"
-          " ("
-          "  SELECT * FROM replies"
-          "  WHERE thread_id=?"
-          "  ORDER BY id DESC"
-          "  LIMIT 3"
-          " )"
-          " ORDER BY id ASC",
-          (thread["id"],)
-        ).fetchall()
-      %}
-      {% for reply in replies %}
+      repl{{ "ies" if replies|length > 4 else "y" }} omitted.
+      <a href="{{ url_for('board.thread', reply_id=replies[0]['id']) }}">Click here</a> to view.
+      {% for reply in replies[-3:] %}
         {{ show_reply(reply) }}
       {% endfor %}
     {% else %}
-      {% for reply in replies[1:4] %}
+      {% for reply in replies[1:] %}
         {{ show_reply(reply) }}
       {% endfor %}
     {% endif %}

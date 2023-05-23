@@ -10,13 +10,18 @@
 {% endblock %}
 
 {% block content %}
-  [<a href="/">Return</a>]
+  [<a href="{{ url_for('board') }}">Return</a>]
   <hr>
   {{ show_reply(replies[0], "thread", thread["subject"]) }}
   {% for reply in replies[1:] %}
     {{ show_reply(reply) }}
   {% endfor %}
   <hr>
+  <div style="text-align: center;">
+    Replies: {{ reply_count }}/{{ MAX_REPLIES }}
+  </div>
+  <hr>
+  <iframe name="dummy" id="dummy" style="display: none;"></iframe>
   <div class="center">
     <div class="new_reply">
       <h3>[Post a Reply]</h3>
@@ -35,4 +40,14 @@
       </form>
     </div>
   </div>
+  <hr>
+  <script>
+    const post_id = window.top.location.hash.substr(1);
+    
+    if (post_id.startsWith("p")) {
+      const post = document.getElementById(post_id);
+      post.scrollIntoView();
+      post.style.backgroundColor = "#202020";
+    }
+  </script>
 {%endblock %}

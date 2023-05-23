@@ -30,12 +30,12 @@
     {% if type == "reply" %}
       >>
     {% endif %}
-    <div class="body">
+    <div id="p{{ reply['id'] }}" class="body">
       <div>
         <span style="color: #ff00ff;"><b>{{ subject }}</b></span>
         <b>{{ reply["name"] }}</b>
         {{ reply["created"].strftime("%d/%m/%y (%a) %H:%M:%S") }}
-        <a class="reply_id" href="/thread/{{ reply["id"] }}">No.{{ reply["id"] }}</a>
+        <a class="reply_id" href="{{ url_for('board.thread', reply_id=reply["id"]) }}">No.{{ reply["id"] }}</a>
       </div>
       <div class="text">
         {{ format(reply["text"]) }}

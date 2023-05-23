@@ -1,6 +1,8 @@
 import os
 
-from flask import Flask
+from flask import (
+  Flask, render_template
+)
 
 def create_app(test_config=None):
   app = Flask(__name__, instance_relative_config=True)
@@ -24,6 +26,14 @@ def create_app(test_config=None):
   
   from . import board
   app.register_blueprint(board.bp)
-  app.add_url_rule("/", endpoint="board")
+  app.add_url_rule("/1/", endpoint="board")
+  
+  @app.route("/")
+  def index():
+    latest_posts = db.get_db().execute(
+      "SELECT id, text FROM replies ORDER BY created LIMIT 10"
+    ).fetchall()
+    
+    return render_template("index.html", latest_posts=latest_posts)
   
   return app
