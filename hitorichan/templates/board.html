@@ -27,16 +27,49 @@
   {% for thread in threads %}
     {%
       set replies=db.execute(
-        "SELECT * FROM"
-        " (SELECT * FROM replies"
-        "  WHERE thread_id=?"
-        "  ORDER BY id DESC)"
+        "SELECT * FROM replies"
+        " WHERE thread_id=?"
         " ORDER BY id ASC"
-        " LIMIT 4",
+        " LIMIT 5",
         (thread["id"],)
       ).fetchall()
     %}
-    {% include "reply.html" %}
+    <div class="thread">
+      <div class="body">
+        <div class="time">
+          <b><span style="color: #ff00ff;">{{ thread["subject"] }}</span> {{ replies[0]["name"] }}</b>
+          {{ replies[0]["created"].strftime("%d/%m/%y (%a) %H:%M:%S") }} No.{{ replies[0]["id"] }}
+        </div>
+        <div class="text">
+          {{ replies[0]["text"] }}
+        </div>
+      </div>
+    </div>
+    {% if replies|length > 4 %}
+      {{
+        (replies|length - 3) }} repl{{ "ies" if replies|length > 4 else "y"
+      }} omitted. <a href="thread/{{ replies[0]['id'] }}">Click here</a> to view.
+      {%
+        set replies=db.execute(
+          "SELECT * FROM"
+          " ("
+          "  SELECT * FROM replies"
+          "  WHERE thread_id=?"
+          "  ORDER BY id DESC"
+          "  LIMIT 3"
+          " )"
+          " ORDER BY id ASC",
+          (thread["id"],)
+        ).fetchall()
+      %}
+      {% for reply in replies %}
+        {% include "reply.html" %}
+      {% endfor %}
+    {% else %}
+      {% for reply in replies[1:4] %}
+        {% include "reply.html" %}
+      {% endfor %}
+    {% endif %}
     <hr>
   {% endfor %}
 {% endblock %}
