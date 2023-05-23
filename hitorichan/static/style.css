@@ -2,6 +2,7 @@ html {
   background-color: #303030;
   color: white;
   font-family: "Arial", monospace;
+  font-size: 0.8em;
 }
 
 hr {
@@ -12,15 +13,39 @@ h1 {
   text-align: center;
 }
 
+a:link {
+  color: #00ffff;
+}
+
+a:visited {
+  color: #22aaaa;
+}
+
+td {
+  background-color: #252525;
+  text-align: left;
+  padding-left: 3px;
+}
+
+table {
+  width: 100%;
+}
+
+td input, td textarea {
+  color: #909090;
+  width: 100%;
+  height: 100%;
+  background-color: #252525;
+}
+
 .center {
   width: 100%;
   text-align: center;
 }
 
-.post, .reply {
-  display: flex;
+.reply {
   margin: 2px;
-  font-size: 0.8em;
+  display: flex;
 }
 
 .reply .body {
@@ -42,11 +67,6 @@ h1 {
   display: inline-block;
   width: 25%;
   text-align: center;
-}
-
-.new_reply .input {
-  width: 100%;
-  margin-bottom: 9px;
 }
 
 .new_reply input[type=submit] {

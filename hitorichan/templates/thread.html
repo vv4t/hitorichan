@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+  [<a href="/">Return</a>]
+  <hr>
+  {% include "reply.html" %}
+  <hr>
+  <div class="center">
+    <div class="new_reply">
+      <h3>[Post a Reply]</h3>
+      <form method="post">
+        <table>
+          <tr>
+            <td><b>Name</b></td>
+            <td><input class="input" type="text" placeholder="Anonymous" name="name"></td>
+          <tr>
+          <tr>
+            <td><b>Comment</b></td>
+            <td><textarea class="input" name="text"></textarea></td>
+          </tr>
+        </table>
+        <input type="submit" value="Post">
+      </form>
+    </div>
+  </div>
+{%endblock %}

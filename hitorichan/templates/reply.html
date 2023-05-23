@@ -1,0 +1,26 @@
+<div class="thread">
+  <div class="body">
+    <div class="time">
+      <b><span style="color: #ff00ff;">{{ thread["subject"] }}</span> {{ replies[0]["name"] }}</b>
+      {{ replies[0]["created"].strftime("%d/%m/%y (%a) %H:%M:%S") }} No.{{ replies[0]["id"] }}
+      [<a href="/thread/{{ thread['id'] }}">View</a>]
+    </div>
+    <div class="text">
+      {{ replies[0]["text"] }}
+    </div>
+  </div>
+  {% for reply in replies[1:] %}
+    <div class="reply">
+      >>
+      <div class="body">
+        <div>
+          <span><b>{{ reply["name"] }}</b></span>
+          <span>{{ reply["created"].strftime("%d/%m/%y (%a) %H:%M:%S") }} No.{{ reply["id"] }}</span>
+        </div>
+        <div class="text">
+          {{ reply["text"] }}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
