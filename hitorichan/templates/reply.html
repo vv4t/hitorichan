@@ -1,3 +1,10 @@
+{% macro format(text) %}
+  {% for line in text.splitlines() %} 
+    {{ line }}
+    <br>
+  {% endfor %}
+{% endmacro %}
+
 <div class="reply">
   >>
   <div class="body">
@@ -6,7 +13,7 @@
       <span>{{ reply["created"].strftime("%d/%m/%y (%a) %H:%M:%S") }} No.{{ reply["id"] }}</span>
     </div>
     <div class="text">
-      {{ reply["text"] }}
+      {{ format(reply["text"]) }}
     </div>
   </div>
 </div>
