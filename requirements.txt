@@ -2,7 +2,6 @@ blinker
 click
 Flask
 gunicorn
-hitorichan @ file:///home/sanakan/g/hitorichan
 itsdangerous
 Jinja2
 MarkupSafe
