@@ -1,8 +1,28 @@
-{% macro format(text) %}
-  {% for line in text.splitlines() %} 
+{% macro f_greentext(line) %}
+  {% if line.startswith(">") %}
+    <span style="color: #44dd44;">{{ line }}</span>
+  {% else %}
     {{ line }}
+  {% endif %}
+{% endmacro %}
+
+{% macro f_quote(line) %}
+  {% if line.startswith(">>") and line[2:-1].isdigit() %}
+    <a href="/thread/{{ line[2:-1] }}">{{ line }}</a>
+  {% else %}
+    {{ f_greentext(line) }}
+  {% endif %}
+{% endmacro %}
+
+{% macro f_newline(text) %}
+  {% for line in text.split("\n") %} 
+    {{ f_quote(line) }}
     <br>
   {% endfor %}
+{% endmacro %}
+
+{% macro format(text) %}
+  {{ f_newline(text) }}
 {% endmacro %}
 
 {% macro show_reply(reply, type="reply", subject="") %}
