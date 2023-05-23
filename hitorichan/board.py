@@ -1,5 +1,5 @@
 from flask import (
-  Blueprint, redirect, render_template, url_for, request, flash
+  Blueprint, redirect, render_template, url_for, request, flash, abort
 )
 
 from hitorichan.db import get_db
@@ -64,6 +64,10 @@ def thread(reply_id):
   db = get_db()
   
   reply = db.execute("SELECT thread_id FROM replies WHERE id=?", (reply_id,)).fetchone()
+  
+  if reply is None:
+    abort(404)
+  
   thread_id = int(reply["thread_id"])
   
   if request.method == "POST":

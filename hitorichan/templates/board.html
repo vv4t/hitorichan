@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 {% from "reply.html" import show_reply %}
 
+{% block title %} Random {% endblock %}
+
 {% block content %}
   <div class="center">
     <h2>[Make a New Post]</h2>
@@ -31,15 +33,15 @@
         "SELECT * FROM replies"
         " WHERE thread_id=?"
         " ORDER BY id ASC"
-        " LIMIT 5",
+        " LIMIT 6",
         (thread["id"],)
       ).fetchall()
     %}
     {{ show_reply(replies[0], "thread", thread["subject"]) }}
     {% if replies|length > 4 %}
-      {{
-        (replies|length - 4) }} repl{{ "ies" if replies|length > 4 else "y"
-      }} omitted. <a href="thread/{{ replies[0]['id'] }}">Click here</a> to view.
+      {{ (replies|length - 4) }}
+      repl{{ "ies" if replies|length == 6 else "y" }} omitted.
+      <a href="thread/{{ replies[0]['id'] }}">Click here</a> to view.
       {%
         set replies=db.execute(
           "SELECT * FROM"
