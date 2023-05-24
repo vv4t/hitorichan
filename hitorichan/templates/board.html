@@ -28,13 +28,16 @@
   </div>
   <hr>
   {% for thread in threads %}
-    {%
-      set replies=db.execute(
+    {{
+      none if db.execute(
         "SELECT * FROM replies"
-        " WHERE thread_id=?"
-        " ORDER BY id ASC",
+        " WHERE thread_id=%s"
+        " ORDER BY id ASC;",
         (thread["id"],)
-      ).fetchall()
+      ) is not none
+    }}
+    {%
+      set replies=db.fetchall()
     %}
     {{ show_reply(replies[0], "thread", thread["subject"]) }}
     {% if replies|length > 4 %}

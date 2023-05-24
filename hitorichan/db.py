@@ -1,15 +1,22 @@
-import sqlite3
-
+import os
+import psycopg2
+import psycopg2.extras
+from urllib.parse import urlparse
 import click
 from flask import current_app, g
 
 def get_db():
   if "db" not in g:
-    g.db = sqlite3.connect(
-      current_app.config["DATABASE"],
-      detect_types=sqlite3.PARSE_DECLTYPES
-    )
-    g.db.row_factory = sqlite3.Row
+    if os.getenv("DB_URL"):
+      db_url = urlparse(os.getenv('DB_URL'))
+      db_conn = psycopg2.connect(
+        host=db_url.hostname,
+        database=db_url.path[1:],
+        user=db_url.username,
+        password=db_url.password
+      )
+      db_conn.autocommit = True
+      g.db = db_conn.cursor(cursor_factory = psycopg2.extras.RealDictCursor)
   
   return g.db
 
@@ -23,7 +30,10 @@ def init_db():
   db = get_db()
   
   with current_app.open_resource("schema.sql") as f:
-    db.executescript(f.read().decode("utf-8"))
+    script = f.read().decode("utf-8")
+    
+    for cmd in (" ".join(script.replace("\n", " ").split()).split(";")[:-1]):
+      db.execute(cmd.strip() + ";")
 
 @click.command("init-db")
 def init_db_command():

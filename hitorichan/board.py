@@ -8,7 +8,7 @@ from datetime import datetime
 MAX_REPLIES = 500
 MAX_THREADS = 50
 
-bp = Blueprint("board", __name__, url_prefix="/1/")
+bp = Blueprint("board", __name__)
 
 @bp.route("/", methods=["GET", "POST"])
 def board():
@@ -29,28 +29,26 @@ def board():
     if error is not None:
       flash(error)
     else:
-      cursor = db.cursor()
-      cursor.execute(
+      db.execute(
         "INSERT INTO threads (subject)"
-        " VALUES (?)",
+        " VALUES (%s) RETURNING id;",
         (subject,)
       )
       
-      thread_id = cursor.lastrowid
+      thread_id = db.fetchone()["id"]
       
-      cursor.execute(
+      db.execute(
         "INSERT INTO replies (name, text, thread_id)"
-        " VALUES (?, ?, ?)",
+        " VALUES (%s, %s, %s) RETURNING id;",
         (name, text, thread_id)
       )
       
-      reply_id = cursor.lastrowid
+      reply_id = db.fetchone()["id"]
       
-      db.commit()
-      
-      thread_count = db.execute("SELECT Count(id) FROM threads").fetchone()[0]
+      db.execute("SELECT COUNT(id) FROM threads;")
+      thread_count = db.fetchone()["count"]
       if thread_count > MAX_THREADS:
-        prune_thread = db.execute(
+        db.execute(
           "SELECT thread.id"
           " FROM threads thread"
           " ORDER BY ("
@@ -60,28 +58,26 @@ def board():
           "  ORDER BY reply.created DESC"
           "  LIMIT 1"
           " ) ASC"
-          " LIMIT 1"
-        ).fetchone()
+          " LIMIT 1;"
+        )
         
-        thread_id = prune_thread["id"]
+        prune_id = db.fetchone()["id"]
         
         db.execute(
           "DELETE FROM replies"
-          " WHERE thread_id=?",
-          (thread_id,)
+          " WHERE thread_id=%s;",
+          (prune_id,)
         )
         
         db.execute(
           "DELETE FROM threads"
-          " WHERE id=?",
-          (thread_id,)
+          " WHERE id=%s",
+          (prune_id,)
         )
-        
-        db.commit()
-    
-    return redirect(url_for("board.thread", reply_id=reply_id))
+      
+      return redirect(url_for("board.thread", reply_id=reply_id))
   
-  threads = db.execute(
+  db.execute(
     "SELECT thread.id, thread.subject"
     " FROM threads thread"
     " ORDER BY ("
@@ -90,8 +86,12 @@ def board():
     "  WHERE reply.thread_id=thread.id"
     "  ORDER BY reply.created DESC"
     "  LIMIT 1"
-    " ) DESC"
-  ).fetchall()
+    " ) DESC;"
+  )
+  
+  threads = db.fetchall()
+  
+  print(threads);
   
   return render_template("board.html", threads=threads, db=db)
 
@@ -99,13 +99,16 @@ def board():
 def thread(reply_id):
   db = get_db()
   
-  reply = db.execute("SELECT thread_id FROM replies WHERE id=?", (reply_id,)).fetchone()
+  db.execute("SELECT thread_id FROM replies WHERE id=%s", (reply_id,))
+  reply = db.fetchone()
   
   if reply is None:
     abort(404)
   
   thread_id = int(reply["thread_id"])
-  reply_count = db.execute("SELECT Count(id) FROM replies WHERE thread_id=?", (thread_id,)).fetchone()[0]
+  
+  db.execute("SELECT COUNT(id) FROM replies WHERE thread_id=%s", (thread_id,))
+  reply_count = db.fetchone()["count"]
   
   if request.method == "POST":
     name = request.form["name"]
@@ -121,46 +124,45 @@ def thread(reply_id):
     if error is not None:
       flash(error)
     else:
-      cursor = db.cursor()
-      cursor.execute(
+      db.execute(
         "INSERT INTO replies (name, text, thread_id)"
-        " VALUES (?, ?, ?)",
+        " VALUES (%s, %s, %s) RETURNING id;",
         (name, text, thread_id)
       )
       
-      new_reply_id = cursor.lastrowid
+      new_reply_id = db.fetchone()["id"]
       
-      db.commit()
-      if reply_count >= MAX_REPLIES:
+      if reply_count + 1 > MAX_REPLIES:
         db.execute(
           "DELETE FROM replies"
-          " WHERE thread_id=?",
+          " WHERE thread_id=%s;",
           (thread_id,)
         )
         
         db.execute(
           "DELETE FROM threads"
-          " WHERE id=?",
+          " WHERE id=%s;",
           (thread_id,)
         )
         
-        db.commit()
-        
-        return redirect(url_for("board", reply_id=reply_id))
+        return redirect(url_for("board"))
       
       return redirect(url_for("board.thread", reply_id=reply_id, _anchor="p" + str(new_reply_id)))
   
-  current_thread = db.execute(
-    "SELECT * FROM threads WHERE id=?",
+  db.execute(
+    "SELECT * FROM threads WHERE id=%s;",
     (thread_id,)
-  ).fetchone()
+  )
+  current_thread = db.fetchone()
   
-  replies = db.execute(
+  db.execute(
     "SELECT id, created, name, text FROM replies"
-    " WHERE thread_id=?"
-    " ORDER BY id ASC",
+    " WHERE thread_id=%s"
+    " ORDER BY id ASC;",
     (thread_id,)
-  ).fetchall()
+  )
+  
+  replies = db.fetchall()
   
   if replies[0]["id"] != reply_id:
     return redirect(url_for("board.thread", reply_id=replies[0]["id"], _anchor="p" + str(reply_id)))
