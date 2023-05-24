@@ -1,4 +1,0 @@
-include hitorichan/schema.sql
-graft hitorichan/static
-graft hitorichan/tempaltes
-global-exclude *.pyc
